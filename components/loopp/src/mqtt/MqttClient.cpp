@@ -741,12 +741,12 @@ MqttClient::handle_error(const std::string &what, std::error_code ec)
           ping_timer = 0;
         }
 
-      heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
+      //heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
       if (sock)
         {
           sock->close();
           sock.reset();
-          heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
+          //heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
         }
 
       if (ec != loopp::net::NetworkErrc::Cancelled)

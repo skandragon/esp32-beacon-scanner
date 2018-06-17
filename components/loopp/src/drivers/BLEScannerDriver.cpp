@@ -143,7 +143,7 @@ BLEScannerDriver::on_scan_timer()
   try
     {
       json j;
-      if (mqtt && mqtt->connected().get() && scan_results.size() > 0)
+      if (scan_results.size() > 0)
         {
           for (auto r : scan_results)
             {
@@ -157,8 +157,11 @@ BLEScannerDriver::on_scan_timer()
               decoder.decode(r.adv_data, jb);
               j.push_back(jb);
             }
-
-          mqtt->publish(topic_scan, j.dump());
+            auto json = j.dump();
+            ESP_LOGI(tag, "JSON: %s", json.c_str());
+            if (mqtt && mqtt->connected().get()) {
+              mqtt->publish(topic_scan, json);
+            }
         }
     }
   catch (std::exception &e)

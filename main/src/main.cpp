@@ -337,6 +337,7 @@ private:
   void main_task()
   {
     loopp::utils::memlog("main_task");
+#ifdef CONFIG_WIFI_SSID
     wifi.set_ssid(CONFIG_WIFI_SSID);
     wifi.set_passphase(CONFIG_WIFI_PASSWORD);
     wifi.set_host_name("scan");
@@ -345,6 +346,7 @@ private:
     wifi.connected().connect(loopp::core::bind_loop(loop, std::bind(&Main::on_wifi_connected, this, std::placeholders::_1)));
     wifi_timeout_timer = loop->add_timer(std::chrono::milliseconds(5000), std::bind(&Main::on_wifi_timeout, this));
     wifi.connect();
+#endif
 
     ESP_LOGI(tag, "Main::main_task memory free %d", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
     heap_caps_print_heap_info(MALLOC_CAP_DEFAULT);
@@ -354,16 +356,20 @@ private:
   }
 
   loopp::ble::BLEScanner &ble_scanner;
+#ifdef CONFIG_WIFI_SSID
   loopp::net::Wifi &wifi;
-  std::shared_ptr<loopp::core::MainLoop> loop;
   std::shared_ptr<loopp::mqtt::MqttClient> mqtt;
+#endif
+  std::shared_ptr<loopp::core::MainLoop> loop;
   std::shared_ptr<loopp::core::Task> task;
   std::map<std::string, std::shared_ptr<loopp::drivers::IDriver>> drivers;
+#ifdef CONFIG_WIFI_SSID
   loopp::core::MainLoop::timer_id wifi_timeout_timer = 0;
   int wifi_fail_count = 0;
   std::string topic_root;
   std::string topic_command;
   std::string topic_configuration;
+#endif
 };
 
 extern "C" void
